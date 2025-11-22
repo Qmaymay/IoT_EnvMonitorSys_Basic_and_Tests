@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+
+# C
+*.o
+*.d
+build/
+
+# IDE
+.vscode/
