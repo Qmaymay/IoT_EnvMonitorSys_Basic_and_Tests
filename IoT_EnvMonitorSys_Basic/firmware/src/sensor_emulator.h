@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-sensor_data_t read_sensor_data(void);
-bool validate_sensor_data(const sensor_data_t* data);
+result_code_t sensor_emulator_init(void);
+result_code_t sensor_emulator_read(sensor_data_t* data);
 
 #endif

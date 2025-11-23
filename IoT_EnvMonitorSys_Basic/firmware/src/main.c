@@ -1,55 +1,91 @@
-#include <stdio.h> 
 #include "common.h"
 #include "config.h"
-#include "sensor_emulator.h"  // 添加这行
-#include "mqtt_client.h"      // 添加这行
+#include "sensor_emulator.h"
+#include "mqtt_client.h"
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 
-// 简单的延时函数
-void delay_ms(uint32_t ms) {
-    // 实际项目中会用RTOS的延时或硬件定时器
-    // 这里简单模拟
-    for(volatile uint32_t i = 0; i < ms * 1000; i++);
-}
 
-// 获取时间戳
-uint32_t get_timestamp(void) {
-    // 实际项目中从RTC获取
-    static uint32_t counter = 0;
-    return counter++;
+
+static void print_device_info(void) {
+    printf("=== IoT Environment Monitor ===\n");
+    printf("Device ID: %s\n", DEVICE_ID);
+    printf("Firmware: %s\n", FIRMWARE_VERSION);
+    printf("Sample Interval: %d ms\n", SENSOR_READ_INTERVAL_MS);
+    printf("MQTT Broker: %s:%d\n", MQTT_BROKER, MQTT_PORT);
+    printf("===============================\n\n");
 }
 
 int main(void) {
-    printf("=== IoT Environment Monitor Started ===\n");
-    printf("Device ID: %s\n", DEVICE_ID);
-    printf("Firmware Version: %s\n", FIRMWARE_VERSION);
+    print_device_info();
     
-    // 初始化MQTT连接
-    if (!mqtt_connect()) {
-        printf("ERROR: MQTT connection failed!\n");
+    // 初始化组件
+    if (sensor_emulator_init() != RESULT_OK) {
+        printf("Failed to initialize sensor emulator\n");
         return -1;
     }
     
-    // 主循环
-    while (1) {
-        // 读取传感器数据
-        sensor_data_t sensor_data = read_sensor_data();
-        
-        // 验证数据
-        if (validate_sensor_data(&sensor_data)) {
-            // 发布到MQTT
-            if (mqtt_publish_sensor_data(&sensor_data)) {
-                printf("Data published successfully\n");
-            } else {
-                printf("ERROR: Failed to publish data\n");
-            }
-        } else {
-            printf("ERROR: Invalid sensor data\n");
-        }
-        
-        // 等待下一次读取
-        delay_ms(SENSOR_READ_INTERVAL_MS);
+    if (mqtt_client_init() != RESULT_OK) {
+        printf("Failed to initialize MQTT client\n");
+        return -1;
     }
     
+    // 连接MQTT
+    if (mqtt_connect() != RESULT_OK) {
+        printf("Warning: MQTT connection failed, continuing in offline mode\n");
+    }
+    
+    printf("Starting main loop...\n");
+    
+    uint32_t last_sample_time = 0;
+    uint16_t sequence_number = 0;
+    
+    // 主循环
+    while (1) {
+        uint32_t current_time = get_current_time_ms();
+        
+        // 处理MQTT后台任务
+        mqtt_process();
+        
+        // 定期采样和发送数据
+        if ((current_time - last_sample_time) >= SENSOR_READ_INTERVAL_MS) {
+            sensor_data_t sensor_data;
+            
+            // 读取传感器数据
+            if (sensor_emulator_read(&sensor_data) == RESULT_OK) {
+                sensor_data.timestamp = get_timestamp();
+                sensor_data.sequence = sequence_number++;
+                
+                printf("[SENSOR] T: %.2f°C, H: %.2f%%, AQ: %.2f\n",
+                       sensor_data.temperature, sensor_data.humidity, 
+                       sensor_data.air_quality);
+                
+                // 发布到MQTT
+                if (mqtt_is_connected()) {
+                    if (mqtt_publish_sensor_data(&sensor_data) != RESULT_OK) {
+                        printf("Failed to publish sensor data: %s\n", 
+                               mqtt_get_last_error());
+                    }
+                } else {
+                    printf("[MQTT] Offline - data not sent\n");
+                    
+                    // 尝试重新连接
+                    if (mqtt_connect() == RESULT_OK) {
+                        printf("[MQTT] Reconnected successfully\n");
+                    }
+                }
+            }
+            
+            last_sample_time = current_time;
+        }
+        
+        // 在实际硬件上可能需要延迟以节省功耗
+        network_delay_ms(100);
+    }
+    
+    // 清理资源
     mqtt_disconnect();
+    
     return 0;
-}  
+}
