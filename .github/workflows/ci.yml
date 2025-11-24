@@ -2,7 +2,7 @@ name: CI - IoT Environment Monitor
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feature/mqtt ]
   pull_request:
     branches: [ main ]
 
@@ -111,9 +111,9 @@ jobs:
         print('✅ Test setup completed successfully')
                 "
 
-            - name: Run pytest
-            run: |
-                cd test-engine
+    - name: Run pytest
+      run: |
+        cd test-engine
         pytest tests/ -v --tb=short
 
   code-quality:
