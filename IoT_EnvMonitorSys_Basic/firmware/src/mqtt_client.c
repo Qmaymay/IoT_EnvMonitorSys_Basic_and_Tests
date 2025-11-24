@@ -109,10 +109,6 @@ void network_delay_ms(uint32_t ms) {
 #endif
 }
 
-// uint32_t get_timestamp(void) {
-//     return (uint32_t)time(NULL);
-// }
-
 // 简化的MQTT客户端状态
 static bool connected = true;
 
