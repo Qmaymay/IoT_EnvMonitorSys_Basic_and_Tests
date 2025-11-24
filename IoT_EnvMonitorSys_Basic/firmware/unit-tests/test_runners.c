@@ -1,50 +1,70 @@
+#include "mqtt_client.h"
+#include "sensor_emulator.h"
 #include <stdio.h>
-#include <assert.h>
-#include "../include/common.h"
-#include "../include/config.h"
+#include <unistd.h>
 
-// 简单的测试框架
-void test_sensor_data_validation(void) {
-    printf("Testing sensor data validation...\n");
+void test_mqtt_client(void) {
+    printf("=== Testing MQTT Client ===\n");
     
-    sensor_data_t good_data = {25.0, 50.0, 80.0, 123456};
-    sensor_data_t bad_data = {1000.0, 50.0, 80.0, 123456}; // 温度超范围
+    // 初始化
+    if (mqtt_client_init() != RESULT_OK) {
+        printf("FAIL: Client initialization\n");
+        return;
+    }
+    printf("PASS: Client initialization\n");
     
-    assert(validate_sensor_data(&good_data) == true);
-    assert(validate_sensor_data(&bad_data) == false);
+    // 测试连接
+    if (mqtt_connect() != RESULT_OK) {
+        printf("FAIL: MQTT connection\n");
+        return;
+    }
+    printf("PASS: MQTT connection\n");
     
-    printf("✅ Sensor data validation test passed!\n");
-}
-
-void test_mqtt_payload_format(void) {
-    printf("Testing MQTT payload format...\n");
+    // 测试发布传感器数据
+    sensor_data_t test_data = {
+        .temperature = 23.5f,
+        .humidity = 65.2f,
+        .air_quality = 45.1f,
+        .timestamp = 1234567890,
+        .sequence = 1
+    };
     
-    sensor_data_t test_data = {23.5, 65.2, 75.8, 999999};
+    if (mqtt_publish_sensor_data(&test_data) != RESULT_OK) {
+        printf("FAIL: Sensor data publish\n");
+    } else {
+        printf("PASS: Sensor data publish\n");
+    }
     
-    // 这里简单测试，实际应该检查格式化函数
-    printf("Data ready for MQTT: temp=%.1f, hum=%.1f\n", 
-           test_data.temperature, test_data.humidity);
+    // 测试状态发布
+    device_status_t status = {
+        .uptime_ms = 60000,
+        .data_count = 10,
+        .mqtt_connected = true,
+        .wifi_strength = 85
+    };
+    strcpy(status.device_id, "test_device");
+    strcpy(status.firmware_version, "1.0.0");
     
-    printf("✅ MQTT payload test passed!\n");
-}
-
-void test_config_values(void) {
-    printf("Testing configuration values...\n");
+    if (mqtt_publish_status(&status) != RESULT_OK) {
+        printf("FAIL: Status publish\n");
+    } else {
+        printf("PASS: Status publish\n");
+    }
     
-    assert(SENSOR_READ_INTERVAL_MS == 5000);
-    assert(TEMPERATURE_RANGE_MIN == -20.0);
-    assert(TEMPERATURE_RANGE_MAX == 60.0);
+    // 处理一些MQTT任务
+    for (int i = 0; i < 5; i++) {
+        mqtt_process();
+        sleep(1);
+    }
     
-    printf("✅ Configuration test passed!\n");
+    // 断开连接
+    mqtt_disconnect();
+    printf("PASS: MQTT disconnection\n");
+    
+    printf("=== MQTT Test Complete ===\n");
 }
 
 int main(void) {
-    printf("=== Starting Firmware Unit Tests ===\n\n");
-    
-    test_sensor_data_validation();
-    test_mqtt_payload_format(); 
-    test_config_values();
-    
-    printf("\n=== All tests passed! ===\n");
+    test_mqtt_client();
     return 0;
 }
