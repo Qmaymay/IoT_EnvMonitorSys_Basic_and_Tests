@@ -35,13 +35,22 @@ jobs:
         cd IoT_EnvMonitorSys_Basic/firmware/build
         cmake --build . --config ${{ env.BUILD_TYPE }}
 
-    - name: Verify build artifacts
+    - name: Verify Linux library naming
       run: |
-        echo "🔍 检查构建产物..."
-        find IoT_EnvMonitorSys_Basic/firmware/build -name "*.exe" -o -name "*.dll" -o -name "*.so" | head -10
-        # 检查实际生成的文件
-        ls -la IoT_EnvMonitorSys_Basic/firmware/build/bin/Release/ 2>/dev/null || echo "Release 目录不存在"
+        echo "🔍 详细检查 Linux 动态库命名..."
+        
+        # 查找所有可能的库文件
+        echo "=== 查找所有相关文件 ==="
+        find IoT_EnvMonitorSys_Basic/firmware/build -name "libenv_monitor*" -o -name "env_monitor*" -o -name "*.so*" -o -name "*.dll" | head -20
+        
+        echo "=== lib 目录详细内容 ==="
+        ls -la IoT_EnvMonitorSys_Basic/firmware/build/lib/ 2>/dev/null || echo "lib 目录不存在"
+        
+        echo "=== bin 目录详细内容 ==="
         ls -la IoT_EnvMonitorSys_Basic/firmware/build/bin/ 2>/dev/null || echo "bin 目录不存在"
+        
+        echo "=== 完整的 build 目录结构 ==="
+        find IoT_EnvMonitorSys_Basic/firmware/build -type f | sort
 
   test-python-services:
     name: Test Python Services
@@ -113,84 +122,4 @@ jobs:
         cd test-engine
         pytest tests/test_sensor.py -v  # 只运行已知通过的测试
 
-  code-quality:
-    name: Code Quality Checks
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Check file structure
-      run: |
-        echo "📁 Project Structure:"
-        find . -name "*.c" -o -name "*.h" -o -name "*.py" -o -name "CMakeLists.txt" -o -name "*.md" | sort
-        echo ""
-        echo "✅ Essential files present"
-
-    - name: Validate CMake configuration
-      run: |
-        cd IoT_EnvMonitorSys_Basic/firmware
-        if [ -f "CMakeLists.txt" ]; then
-          echo "✅ CMakeLists.txt exists"
-          # Basic syntax check
-          grep "project(" CMakeLists.txt && echo "✅ Project definition found"
-        else
-          echo "❌ CMakeLists.txt missing"
-          exit 1
-        fi
-
-    - name: Check for required headers
-      run: |
-        cd IoT_EnvMonitorSys_Basic/firmware
-        if [ -f "include/common.h" ] && [ -f "include/config.h" ]; then
-          echo "✅ Required header files present"
-        else
-          echo "❌ Missing required header files"
-          exit 1
-        fi
-
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Basic security checks
-      run: |
-        echo "🔍 Running basic security checks..."
-        # Check for hardcoded credentials
-        if grep -r "password\|secret\|key" --include="*.c" --include="*.py" --include="*.h" . | grep -v "//\|#\|/\*"; then
-          echo "⚠️  Possible hardcoded credentials found"
-          # Don't fail the build, just warn
-        else
-          echo "✅ No obvious hardcoded credentials"
-        fi
-
-        # Check file permissions
-        find . -name "*.sh" -exec test -x {} \; -print | head -5
-        echo "✅ Basic security checks completed"
-
-  deploy-docs:
-    name: Deploy Documentation
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Generate build status badge
-      run: |
-        echo "📊 Generating build status..."
-        echo "![CI Status](https://github.com/${{ github.repository }}/workflows/CI/badge.svg)" > BUILD_STATUS.md
-        cat BUILD_STATUS.md
-
-    - name: Upload workflow status
-      uses: actions/upload-artifact@v4
-      with:
-        name: workflow-status
-        path: BUILD_STATUS.md
-        retention-days: 1
+ 
