@@ -34,3 +34,5 @@ def test_database_integration():
     
     assert len(recent_data) > 0
     print("✅ 数据库测试通过")
+
+    
