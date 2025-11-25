@@ -47,19 +47,19 @@ class DataCollector:
     
     def start(self):
         """启动数据收集服务"""
-        print("🚀 Starting IoT Data Collector...")
-        print(f"📍 MQTT Broker: {MQTT_BROKER}:{MQTT_PORT}")
+        print(" Starting IoT Data Collector...")
+        print(f" MQTT Broker: {MQTT_BROKER}:{MQTT_PORT}")
         
         try:
             # 连接MQTT代理
             self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
             
             # 启动网络循环（阻塞调用）
-            print("🔄 Starting network loop...")
+            print(" Starting network loop...")
             self.mqtt_client.loop_forever()
             
         except KeyboardInterrupt:
-            print("\n🛑 Shutting down data collector...")
+            print("\n Shutting down data collector...")
             self.mqtt_client.disconnect()
         except Exception as e:
             print(f"❌ Unexpected error: {e}")

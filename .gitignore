@@ -9,3 +9,6 @@ build/
 
 # IDE
 .vscode/
+
+
+*.db"
