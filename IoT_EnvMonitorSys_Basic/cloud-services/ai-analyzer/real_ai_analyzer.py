@@ -9,6 +9,14 @@ import os
 
 class RealAIAnalyzer:
     def __init__(self):
+        # 获取当前文件所在目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.models_dir = os.path.join(current_dir, "ai_models")
+        self.model_path = os.path.join(self.models_dir, "environment_model.pkl")
+        self.cluster_path = os.path.join(self.models_dir, "cluster_model.pkl")
+        
+        os.makedirs(self.models_dir, exist_ok=True)
+        
         self.model_path = "ai_models/environment_model.pkl"
         self.cluster_path = "ai_models/cluster_model.pkl"
         self.labels = ['舒适', '炎热', '寒冷', '潮湿', '干燥', '空气质量差']

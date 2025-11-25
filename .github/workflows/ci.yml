@@ -70,6 +70,11 @@ jobs:
         cd IoT_EnvMonitorSys_Basic/cloud-services/data-collector
         pip install -r requirements.txt
         pip install pytest
+    
+    - name: Install AI dependencies
+      run: |
+        pip install -r cloud-services/requirements-ai.txt
+        
 
     - name: Run basic Python tests
       run: |
@@ -77,6 +82,8 @@ jobs:
         python -c "import json; print('JSON import OK')"
         python -c "import paho.mqtt.client as mqtt; print('MQTT import OK')"
         python -c "import sqlite3; print('SQLite import OK')"
+
+
 
     - name: Test data collector syntax
       run: |
