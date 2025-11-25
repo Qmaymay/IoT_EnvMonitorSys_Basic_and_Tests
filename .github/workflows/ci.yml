@@ -70,12 +70,8 @@ jobs:
         cd IoT_EnvMonitorSys_Basic/cloud-services
         pip install -r requirements.txt
         pip install pytest
-    
-    - name: Install AI dependencies
-      run: |
-        pip install -r cloud-services/requirements-ai.txt
-        
 
+  
     - name: Run basic Python tests
       run: |
         cd IoT_EnvMonitorSys_Basic/cloud-services
