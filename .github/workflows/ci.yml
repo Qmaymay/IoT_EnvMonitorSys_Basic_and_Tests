@@ -37,20 +37,8 @@ jobs:
 
     - name: Verify Linux library naming
       run: |
-        echo "🔍 详细检查 Linux 动态库命名..."
-        
-        # 查找所有可能的库文件
-        echo "=== 查找所有相关文件 ==="
-        find IoT_EnvMonitorSys_Basic/firmware/build -name "libenv_monitor*" -o -name "env_monitor*" -o -name "*.so*" -o -name "*.dll" | head -20
-        
-        echo "=== lib 目录详细内容 ==="
-        ls -la IoT_EnvMonitorSys_Basic/firmware/build/lib/ 2>/dev/null || echo "lib 目录不存在"
-        
-        echo "=== bin 目录详细内容 ==="
-        ls -la IoT_EnvMonitorSys_Basic/firmware/build/bin/ 2>/dev/null || echo "bin 目录不存在"
-        
-        echo "=== 完整的 build 目录结构 ==="
-        find IoT_EnvMonitorSys_Basic/firmware/build -type f | sort
+        echo "✅ 构建完成，检查输出文件:"
+        ls -la IoT_EnvMonitorSys_Basic/firmware/build/bin/
 
   test-python-services:
     name: Test Python Services
@@ -67,27 +55,23 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        cd IoT_EnvMonitorSys_Basic/cloud-services
+        cd IoT_EnvMonitorSys_Basic/cloud_services
         pip install -r requirements.txt
         pip install pytest
 
-  
     - name: Run basic Python tests
       run: |
-        cd IoT_EnvMonitorSys_Basic/cloud-services
+        cd IoT_EnvMonitorSys_Basic/cloud_services  # 修复：cloud-services → cloud_services
         python -c "import json; print('JSON import OK')"
         python -c "import paho.mqtt.client as mqtt; print('MQTT import OK')"
         python -c "import sqlite3; print('SQLite import OK')"
-
-        # 测试AI依赖
         python -c "import sklearn; print('scikit-learn import OK')"
         python -c "import joblib; print('joblib import OK')"
         python -c "import numpy; print('numpy import OK')"
 
-
     - name: Test data collector syntax
       run: |
-        cd IoT_EnvMonitorSys_Basic/cloud-services/data-collector
+        cd IoT_EnvMonitorSys_Basic/cloud_services/data_collector
         python -m py_compile mqtt_receiver.py
         echo "Python syntax check passed"
 
@@ -115,18 +99,15 @@ jobs:
         find . -name "env_monitor*" -type f 2>/dev/null | head -10 || echo "未找到 env_monitor 文件"
         find . -name "*.exe" -o -name "*.dll" -o -name "*.so" 2>/dev/null | head -10 || echo "未找到可执行文件"
 
-
     - name: Run basic file checks
       run: |
         echo "✅ 检查关键文件..."
         [ -f "IoT_EnvMonitorSys_Basic/firmware/src/mqtt_client.c" ] && echo "✅ mqtt_client.c 存在"
-        [ -f "IoT_EnvMonitorSys_Basic/cloud-services/data-collector/simple_collector.py" ] && echo "✅ simple_collector.py 存在"
-        [ -f "test-engine/tests/test_sensor.py" ] && echo "✅ test_sensor.py 存在"
+        [ -f "IoT_EnvMonitorSys_Basic/cloud_services/data_collector/simple_collector.py" ] && echo "✅ simple_collector.py 存在"  # 修复：cloud-services → cloud_services, data-collector → data_collector
+        [ -f "test_engine/tests/test_sensor.py" ] && echo "✅ test_sensor.py 存在"  # 修复：test-engine → test_engine
         echo "基础文件检查通过"
         
     - name: Run only passing tests
       run: |
-        cd test-engine
-        pytest tests/test_sensor.py -v  # 只运行已知通过的测试
-
- 
+        cd test_engine  # 修复：test-engine → test_engine
+        pytest tests/test_sensor.py -v

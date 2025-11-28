@@ -5,15 +5,20 @@ import sys
 import os
 import json
 import time
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services'))
+
+ai_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services', 'ai-analyzer')
+shared_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services', 'shared')
+
+sys.path.extend([ai_dir, shared_dir])
 
 def test_complete_data_flow():
     """测试从接收到分析的完整数据流"""
     print("🚀 开始完整数据流测试...")
     
     # 1. 初始化组件
-    from shared.database import DatabaseManager
-    from ai_analyzer.real_ai_analyzer import RealAIAnalyzer
+    from database import DatabaseManager
+    from real_ai_analyzer import RealAIAnalyzer
     
     db = DatabaseManager(":memory:")  # 使用内存数据库避免污染
     ai = RealAIAnalyzer()
@@ -27,14 +32,14 @@ def test_complete_data_flow():
         "ts": int(time.time())
     }
     
-    print(f"📨 模拟传感器数据: {json.dumps(sensor_data, indent=2)}")
+    print(f" 模拟传感器数据: {json.dumps(sensor_data, indent=2)}")
     
     # 3. 数据存储（相当于data-collector的功能）
     db.save_sensor_data(sensor_data)
-    print("💾 数据存储成功")
+    print(" 数据存储成功")
     
     # 4. 验证数据存储
-    recent_data = db.get_recent_data("test_sensor_001", 1)
+    recent_data = db.get_recent_data("env_monitor_basic_001", 1)
     assert len(recent_data) > 0, "数据存储失败"
     assert recent_data[0]['temp'] == 28.5, "存储的数据不正确"
     print("✅ 数据存储验证通过")
@@ -47,7 +52,7 @@ def test_complete_data_flow():
         sensor_data["air"]
     )
     
-    print(f"🤖 AI分析结果: {json.dumps(analysis_result, indent=2, ensure_ascii=False)}")
+    print(f" AI分析结果: {json.dumps(analysis_result, indent=2, ensure_ascii=False)}")
     
     # 6. 验证AI分析结果
     assert "environment_type" in analysis_result, "AI分析缺少环境类型"
@@ -95,7 +100,7 @@ def test_multiple_data_points():
         db.save_sensor_data(data)
         result = ai.analyze_with_ai(data["device_id"], data["temp"], data["hum"], data["air"])
         
-        print(f"📊 测试案例 {i+1}: {case['expected_env']}环境")
+        print(f" 测试案例 {i+1}: {case['expected_env']}环境")
         print(f"   结果: {result['environment_type']}")
         assert result['environment_type'] in ["炎热", "潮湿", "舒适", "理想环境"], f"异常环境类型: {result['environment_type']}"
     

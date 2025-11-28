@@ -1,5 +1,5 @@
 """
-真正的AI分析器 - 使用机器学习模型
+AI分析器 - 使用机器学习模型
 """
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -12,13 +12,15 @@ class RealAIAnalyzer:
         # 获取当前文件所在目录
         current_dir = os.path.dirname(os.path.abspath(__file__))
         self.models_dir = os.path.join(current_dir, "ai_models")
+
         self.model_path = os.path.join(self.models_dir, "environment_model.pkl")
         self.cluster_path = os.path.join(self.models_dir, "cluster_model.pkl")
         
+        # # 创建多级目录，且目录已存在时不报错
         os.makedirs(self.models_dir, exist_ok=True)
         
-        self.model_path = "ai_models/environment_model.pkl"
-        self.cluster_path = "ai_models/cluster_model.pkl"
+        # self.model_path = "ai_models/environment_model.pkl"
+        # self.cluster_path = "ai_models/cluster_model.pkl"
         self.labels = ['舒适', '炎热', '寒冷', '潮湿', '干燥', '空气质量差']
         
         # 加载或训练模型
@@ -34,7 +36,7 @@ class RealAIAnalyzer:
             X, y = self.generate_training_data()
             model = RandomForestClassifier(n_estimators=100, random_state=42)
             model.fit(X, y)
-            os.makedirs("ai_models", exist_ok=True)
+            
             joblib.dump(model, self.model_path)
             return model
     
@@ -45,8 +47,10 @@ class RealAIAnalyzer:
         else:
             # 生成正常环境数据用于聚类
             X_normal = self.generate_normal_data()
+
             model = KMeans(n_clusters=3, random_state=42)
             model.fit(X_normal)
+            
             joblib.dump(model, self.cluster_path)
             return model
     

@@ -16,11 +16,11 @@ class PathResolver:
         """获取动态库路径"""
         if platform.system() == "Windows":
             lib_name = "env_monitor.dll"
-            lib_dir = self.firmware_dir / "build" / "lib"
+            lib_dir = self.firmware_dir / "build" / "bin" / "Release"
         else:
             # Linux 和其他 Unix-like 系统
             lib_name = "libenv_monitor.so"
-            lib_dir = self.firmware_dir / "build" / "lib"
+            lib_dir = self.firmware_dir / "build" / "bin"
         
         lib_path = lib_dir / lib_name
         
