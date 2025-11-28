@@ -75,7 +75,7 @@ jobs:
 
     - name: Test data collector syntax
       run: |
-        cd IoT_EnvMonitorSys_Basic/cloud-services/data-collector
+        cd IoT_EnvMonitorSys_Basic/cloud_services/data_collector
         python -m py_compile mqtt_receiver.py
         echo "Python syntax check passed"
 
