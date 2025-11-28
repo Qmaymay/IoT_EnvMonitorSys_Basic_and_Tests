@@ -18,11 +18,8 @@ endif()
 # 包含头文件目录
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# 🆕 只设置运行时和库输出目录，删除归档目录
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 
 # 可执行文件 - 主设备程序
 add_executable(env_monitor
@@ -36,6 +33,9 @@ add_library(env_monitor_shared SHARED
     src/sensor_emulator.c
     src/mqtt_client.c
 )
+
+# 导出定义 
+target_compile_definitions(env_monitor_shared PRIVATE ENV_MONITOR_DLL_EXPORTS)
 
 # 设置库的属性
 set_target_properties(env_monitor_shared PROPERTIES

@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 // 设备配置
-#define DEVICE_ID "env_monitor_basic_001"
+#define DEVICE_ID "env_monitor_basic_001" 
 #define FIRMWARE_VERSION "1.0.0"
 #define FEATURE_SET "basic-loop"
 

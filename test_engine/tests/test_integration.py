@@ -11,13 +11,13 @@ from pathlib import Path
 import subprocess
 import sys
 import os
-from utils.path_resolver import get_library_path, get_executable_path
 
-# 添加 utils 目录到 Python 路径
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'utils'))
+# 添加项目根目录
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-# 导入路径解析器
-from path_resolver import get_library_path, get_executable_path, get_build_artifacts
+# 现在可以正确导入
+from test_engine.utils.path_resolver import get_build_artifacts, get_library_path, get_executable_path
+
 
 class TestIoTIntegration:
     """集成测试类"""
@@ -26,8 +26,12 @@ class TestIoTIntegration:
         """测试类初始化"""
         # 使用路径解析器获取正确的路径
         artifacts = get_build_artifacts()
+
+        print("artifacts: {artifacts}")
         
         self.dll_path = get_library_path()
+        print("artifself.dll_path: {self.dll_path}")
+        
         self.exe_path = get_executable_path()
         
         print(f"项目根目录: {artifacts['build_dir'].parent}")
@@ -124,26 +128,26 @@ class TestIoTIntegration:
                 print(f"❌ 消息处理错误: {e}")
         
     def test_mqtt_command_generation(self):
-     """测试MQTT命令生成"""
-    # 测试命令格式是否正确
-    test_data = {
-        "device_id": "test_device",
-        "temperature": 25.5,
-        "humidity": 60.0, 
-        "air_quality": 75.0,
-        "timestamp": 1234567890
-    }
-    
-    # 模拟你的C代码生成的命令格式
-    expected_payload = '{"device_id":"test_device","temp":25.50,"hum":60.00,"air":75.00,"ts":1234567890}'
-    
-    # 验证JSON格式
-    import json
-    parsed = json.loads(expected_payload)
-    assert parsed["device_id"] == "test_device"
-    assert parsed["temp"] == 25.5
-    assert parsed["hum"] == 60.0
-    print("✅ MQTT消息格式正确")
+        """测试MQTT命令生成"""
+        # 测试命令格式是否正确
+        test_data = {
+            "device_id": "test_device",
+            "temperature": 25.5,
+            "humidity": 60.0, 
+            "air_quality": 75.0,
+            "timestamp": 1234567890
+        }
+        
+        # 模拟你的C代码生成的命令格式
+        expected_payload = '{"device_id":"test_device","temp":25.50,"hum":60.00,"air":75.00,"ts":1234567890}'
+        
+        # 验证JSON格式
+        import json
+        parsed = json.loads(expected_payload)
+        assert parsed["device_id"] == "test_device"
+        assert parsed["temp"] == 25.5
+        assert parsed["hum"] == 60.0
+        print("✅ MQTT消息格式正确")
 
     def test_mqtt_integration(self):
         """测试MQTT集成(不实际执行system命令)"""
@@ -191,6 +195,7 @@ class TestIoTIntegration:
             subscriber.loop_stop()
             subscriber.disconnect()
 
+
     def test_sensor_data_format(self):
         """测试传感器数据格式"""
         # 这里可以测试数据格式验证
@@ -214,6 +219,7 @@ class TestIoTIntegration:
         assert isinstance(valid_data['ts'], int)
         
         print("✅ 传感器数据格式验证通过")
+        
 
 if __name__ == "__main__":
     # 直接运行测试
@@ -232,3 +238,62 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ 测试失败: {e}")
         raise
+
+
+# """
+# IoT环境监测系统 - 集成测试
+# 无导入版本 - 立即可用
+# """
+# import pytest
+# import time
+# import subprocess
+# from pathlib import Path
+
+# class TestIoTIntegration:
+#     def setup_class(self):
+#         """直接硬编码路径"""
+#         root = Path(__file__).parent.parent.parent
+#         build = root / "IoT_EnvMonitorSys_Basic" / "firmware" / "build"
+        
+#         self.exe_path = build / "bin" / "Release" / "env_monitor_app.exe"
+#         self.dll_path = build / "bin" / "Release" / "env_monitor.dll"
+
+#     def test_build_output_exists(self):
+#         """测试文件存在"""
+#         assert self.exe_path.exists(), f"EXE不存在: {self.exe_path}"
+#         assert self.dll_path.exists(), f"DLL不存在: {self.dll_path}"
+#         print("✅ 文件存在")
+
+#     def test_executable_runs(self):
+#         """测试程序运行"""
+#         if not self.exe_path.exists():
+#             pytest.skip("EXE不存在")
+        
+#         proc = subprocess.Popen([str(self.exe_path)])
+#         time.sleep(2)
+#         proc.terminate()
+#         proc.wait()
+#         print("✅ 程序运行正常")
+
+#     def test_dynamic_library_loading(self):
+#         """测试动态库加载"""
+#         if not self.dll_path.exists():
+#             pytest.skip("DLL不存在")
+        
+#         import ctypes
+#         ctypes.CDLL(str(self.dll_path))
+#         print("✅ 动态库加载成功")
+
+# if __name__ == "__main__":
+#     test = TestIoTIntegration()
+#     test.setup_class()
+    
+#     print("🚀 开始运行集成测试...")
+#     try:
+#         test.test_build_output_exists()
+#         test.test_executable_runs()
+#         test.test_dynamic_library_loading()
+#         print("🎉 所有测试通过！")
+#     except Exception as e:
+#         print(f"❌ 测试失败: {e}")
+#         raise

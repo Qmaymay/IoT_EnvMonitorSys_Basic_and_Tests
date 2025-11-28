@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "env_monitor_export.h"
 
 
 // 传感器数据结构
@@ -44,12 +45,14 @@ typedef enum {
 } result_code_t;
 
 // 函数声明
-uint32_t get_current_time_ms(void);
-void network_delay_ms(uint32_t ms);
-uint32_t get_timestamp(void);
+ENV_MONITOR_API uint32_t get_current_time_ms(void);
+ENV_MONITOR_API void network_delay_ms(uint32_t ms);
+ENV_MONITOR_API uint32_t get_timestamp(void);
 
 // // 通用函数声明
 // void delay_ms(uint32_t ms);
 // uint32_t get_timestamp(void);
+
+
 
 #endif // COMMON_H
