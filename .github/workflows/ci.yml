@@ -37,20 +37,8 @@ jobs:
 
     - name: Verify Linux library naming
       run: |
-        echo "🔍 详细检查 Linux 动态库命名..."
-        
-        # 查找所有可能的库文件
-        echo "=== 查找所有相关文件 ==="
-        find IoT_EnvMonitorSys_Basic/firmware/build -name "libenv_monitor*" -o -name "env_monitor*" -o -name "*.so*" -o -name "*.dll" | head -20
-        
-        echo "=== lib 目录详细内容 ==="
-        ls -la IoT_EnvMonitorSys_Basic/firmware/build/lib/ 2>/dev/null || echo "lib 目录不存在"
-        
-        echo "=== bin 目录详细内容 ==="
-        ls -la IoT_EnvMonitorSys_Basic/firmware/build/bin/ 2>/dev/null || echo "bin 目录不存在"
-        
-        echo "=== 完整的 build 目录结构 ==="
-        find IoT_EnvMonitorSys_Basic/firmware/build -type f | sort
+          echo " 构建完成，检查输出文件:"
+          ls -la IoT_EnvMonitorSys_Basic/firmware/build/bin/
 
   test-python-services:
     name: Test Python Services
@@ -67,7 +55,7 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        cd IoT_EnvMonitorSys_Basic/cloud-services
+        cd IoT_EnvMonitorSys_Basic/cloud_services
         pip install -r requirements.txt
         pip install pytest
 
