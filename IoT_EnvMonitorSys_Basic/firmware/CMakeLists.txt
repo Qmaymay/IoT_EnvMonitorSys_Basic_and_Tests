@@ -18,8 +18,9 @@ endif()
 # 包含头文件目录
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
+# 输出目录由顶层 CMakeLists.txt 控制
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/bin)
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/bin)
 
 # 可执行文件 - 主设备程序
 add_executable(env_monitor
@@ -50,8 +51,8 @@ set_target_properties(env_monitor PROPERTIES
 )
 
 message(STATUS "=== IoT Environment Monitor CMake配置 ===")
-message(STATUS "项目名称: ${PROJECT_NAME}")
-message(STATUS "输出目录: ${CMAKE_BINARY_DIR}/lib")
+message(STATUS "可执行文件输出: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+message(STATUS "动态库输出: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "生成目标:")
 message(STATUS "  env_monitor_app     - 设备可执行程序")
 message(STATUS "  env_monitor         - 设备动态库")

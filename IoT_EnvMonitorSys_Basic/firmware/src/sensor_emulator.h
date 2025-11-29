@@ -1,4 +1,4 @@
-// sensor_emulator.h - 正确
+﻿// sensor_emulator.h - 正确
 #ifndef SENSOR_EMULATOR_H
 #define SENSOR_EMULATOR_H
 
