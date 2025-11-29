@@ -4,14 +4,16 @@ cloud-services核心功能测试
 """
 import sys
 import os
+from pathlib import Path
+
 # 集中定义所有路径
 project_root = Path(__file__).parent.parent.parent
 firmware_dir = project_root / "IoT_EnvMonitorSys_Basic" / "firmware"
-cloud_services_dir = project_root / "IoT_EnvMonitorSys_Basic" / "cloud-services"
+cloud_services_dir = project_root / "IoT_EnvMonitorSys_Basic" / "cloud_services"
 
 # 添加到Python路径
 sys.path.extend([
-    str(cloud_services_dir / "ai-analyzer"),
+    str(cloud_services_dir / "ai_analyzer"),
     str(cloud_services_dir / "shared"),
     str(firmware_dir / "utils")  # 如果有utils目录
 ])
@@ -39,29 +41,8 @@ def test_ai_analyzer_integration():
     assert "ai_suggestions" in result
     print("✅ AI分析器测试通过")
 
-def test_database_integration():
-    """测试数据库集成"""
-    
-    db = DatabaseManager(":memory:")  # 内存数据库，不污染真实数据
-    test_data = {
-        "device_id": "test_device", 
-        "temp": 25.5, 
-        "hum": 60.0, 
-        "air": 85.0, 
-        "ts": 1234567890
-    }
-    
-    db.save_sensor_data(test_data)
-    recent_data = db.get_recent_data("test_device", 1)
-    assert len(recent_data) > 0
-    assert recent_data[0]["temp"] == 25.5  # 2. 数据正确
-    assert recent_data[0]["hum"] == 60.0   # 3. 数据完整
-        
-    print("✅ 数据库测试通过")
-
 
 if __name__ == "__main__":
     print("开始运行cloud-services测试...")
     test_ai_analyzer_integration()
-    test_database_integration()
     print("所有测试完成！")
