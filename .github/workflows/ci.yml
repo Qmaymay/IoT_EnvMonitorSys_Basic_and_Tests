@@ -58,18 +58,12 @@ jobs:
 
     - name: Run basic Python tests
       run: |
-        python -c "import json; print('JSON import OK')"
         python -c "import paho.mqtt.client as mqtt; print('MQTT import OK')"
         python -c "import sqlite3; print('SQLite import OK')"
         python -c "import sklearn; print('scikit-learn import OK')"
         python -c "import joblib; print('joblib import OK')"
         python -c "import numpy; print('numpy import OK')"
 
-    - name: Test data collector syntax
-      run: |
-        cd IoT_EnvMonitorSys_Basic/cloud_services/data_collector
-        python -m py_compile mqtt_receiver.py
-        echo "Python syntax check passed"
 
   integration-tests:
     name: Integration Tests
@@ -89,22 +83,14 @@ jobs:
       run: |
         pip install pytest paho-mqtt
 
-    - name: Check build artifacts
-      run: |
-        echo "📁 检查构建产物..."
-        find . -name "env_monitor*" -type f 2>/dev/null | head -10 || echo "未找到 env_monitor 文件"
-        find . -name "*.exe" -o -name "*.dll" -o -name "*.so" 2>/dev/null | head -10 || echo "未找到可执行文件"
 
-    - name: Run basic file checks
+    - name: Run test_engine tests
       run: |
-        echo "✅ 检查关键文件..."
-        [ -f "IoT_EnvMonitorSys_Basic/firmware/src/mqtt_client.c" ] && echo "✅ mqtt_client.c 存在"
-        [ -f "IoT_EnvMonitorSys_Basic/cloud_services/data_collector/simple_collector.py" ] && echo "✅ simple_collector.py 存在"  # 修复：cloud-services → cloud_services, data-collector → data_collector
-        [ -f "test_engine/tests/test_sensor.py" ] && echo "✅ test_sensor.py 存在"  # 修复：test-engine → test_engine
-        echo "基础文件检查通过"
+        export PYTHONPATH=$PWD:$PWD/IoT_EnvMonitorSys_Basic/cloud_services
+        cd test_engine
         
-    - name: Run only passing tests
-      run: |
-        export PYTHONPATH=$PWD
-        cd test_engine  
+        # 手动指定要运行的测试文件
+        pytest tests/test_cloud_services.py -v
+        pytest tests/test_complete_data_flow.py -v
         pytest tests/test_sensor.py -v
+        pytest tests/test_integration.py -v
