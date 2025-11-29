@@ -16,7 +16,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # 现在可以正确导入
-from test_engine.utils.path_resolver import get_build_artifacts, get_library_path, get_executable_path
+from test_engine.utils.path_resolver import get_library_path, get_executable_path
 
 
 class TestIoTIntegration:
@@ -24,17 +24,12 @@ class TestIoTIntegration:
     
     def setup_class(self):
         """测试类初始化"""
-        # 使用路径解析器获取正确的路径
-        artifacts = get_build_artifacts()
-
-        print("artifacts: {artifacts}")
         
         self.dll_path = get_library_path()
         print("artifself.dll_path: {self.dll_path}")
         
         self.exe_path = get_executable_path()
-        
-        print(f"项目根目录: {artifacts['build_dir'].parent}")
+
         print(f"可执行文件路径: {self.exe_path}")
         print(f"动态库路径: {self.dll_path}")
         print(f"可执行文件存在: {self.exe_path.exists()}")
