@@ -4,6 +4,8 @@ cloud-services核心功能测试
 """
 import sys
 import os
+from pathlib import Path
+
 # 集中定义所有路径
 project_root = Path(__file__).parent.parent.parent
 firmware_dir = project_root / "IoT_EnvMonitorSys_Basic" / "firmware"
