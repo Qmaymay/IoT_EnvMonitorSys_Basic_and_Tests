@@ -9,6 +9,5 @@ build/
 
 # IDE
 .vscode/
-
-
+*.log
 *.db"

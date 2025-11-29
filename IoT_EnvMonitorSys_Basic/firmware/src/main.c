@@ -1,4 +1,4 @@
-#include "common.h"
+﻿#include "common.h"
 #include "config.h"
 #include "sensor_emulator.h"
 #include "mqtt_client.h"
@@ -56,10 +56,12 @@ int main(void) {
             if (sensor_emulator_read(&sensor_data) == RESULT_OK) {
                 sensor_data.timestamp = get_timestamp();
                 sensor_data.sequence = sequence_number++;
+
+                printf("=== BUILD VERSION: NEW VERSION ===\n");
                 
-                printf("[SENSOR] T: %.2f°C, H: %.2f%%, AQ: %.2f\n",
-                       sensor_data.temperature, sensor_data.humidity, 
-                       sensor_data.air_quality);
+                // printf("[SENSOR] T: %.2f°C, H: %.2f%%, AQ: %.2f\n",
+                //        sensor_data.temperature, sensor_data.humidity, 
+                //        sensor_data.air_quality);
                 
                 // 发布到MQTT
                 if (mqtt_is_connected()) {

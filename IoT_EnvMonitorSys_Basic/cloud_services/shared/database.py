@@ -9,9 +9,14 @@ class DatabaseManager:
             # 获取当前脚本所在目录
             current_dir = os.path.dirname(os.path.abspath(__file__))
             self.db_path = os.path.join(current_dir, "sensor_data.db")
+            print(f"🔄 使用默认路径: {self.db_path}")
         else:
             self.db_path = db_path
-        self.init_database()
+            self.init_database()
+            print(f"🔄 使用传入路径: {self.db_path}")
+        
+        print(f"📍 最终数据库路径: {os.path.abspath(self.db_path)}")
+        print(f"📍 文件存在: {os.path.exists(self.db_path)}")
     
     def init_database(self):
         """初始化两个表"""
@@ -69,6 +74,16 @@ class DatabaseManager:
         conn.close()
         print(f"Data saved: {data['device_id']} at {datetime.now()}")
     
+    def get_all_devices(self):
+        """获取数据库中所有的设备ID"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT DISTINCT device_id FROM sensor_data")
+        devices = [row[0] for row in cursor.fetchall()]
+        
+        conn.close()
+        return devices
 
     def get_recent_data(self, device_id: str, hours: int = 24):
         """获取最近的数据用于AI分析"""
