@@ -7,8 +7,8 @@ import json
 import time
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services'))
 
-ai_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services', 'ai-analyzer')
-shared_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud-services', 'shared')
+ai_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud_services', 'ai_analyzer')
+shared_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'IoT_EnvMonitorSys_Basic', 'cloud_services', 'shared')
 
 sys.path.extend([ai_dir, shared_dir])
 

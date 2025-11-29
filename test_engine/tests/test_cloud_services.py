@@ -9,11 +9,11 @@ from pathlib import Path
 # 集中定义所有路径
 project_root = Path(__file__).parent.parent.parent
 firmware_dir = project_root / "IoT_EnvMonitorSys_Basic" / "firmware"
-cloud_services_dir = project_root / "IoT_EnvMonitorSys_Basic" / "cloud-services"
+cloud_services_dir = project_root / "IoT_EnvMonitorSys_Basic" / "cloud_services"
 
 # 添加到Python路径
 sys.path.extend([
-    str(cloud_services_dir / "ai-analyzer"),
+    str(cloud_services_dir / "ai_analyzer"),
     str(cloud_services_dir / "shared"),
     str(firmware_dir / "utils")  # 如果有utils目录
 ])
