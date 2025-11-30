@@ -1,5 +1,5 @@
 # IoT Environment Monitor System - Basic
-# IoT环境监测系统 - 基础版 (v1.0)
+# IoT环境监测系统 - 基础PC版 (v1.0)
 
 ## 版本特性
 - 单循环架构
