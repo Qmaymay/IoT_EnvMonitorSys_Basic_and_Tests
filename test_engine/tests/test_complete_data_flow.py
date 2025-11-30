@@ -32,7 +32,7 @@ def test_complete_data_flow():
         print("⏭️  跳过测试 - 数据库中无设备数据")
         return True  # 优雅跳过
     
-    device_id = devices[0]  # 使用第一个真实设备
+    device_id = devices[1]  # 使用第一个真实设备
     
     # 3. 获取真实数据
     recent_data = db.get_recent_data(device_id, hours=1)  # 最近1小时数据
